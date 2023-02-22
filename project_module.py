@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from datetime import date
-from messaging import command, EventBase
+from messaging import EventBase, command_handler
 
 
 @dataclass
@@ -78,7 +78,7 @@ class ProjectModule:
     def get_all_projects_of_employee(self, employee_id):
         ...
 
-    @command
+    @command_handler
     def add_project(self, project_id, project_name):
         new_project = Project(
             id=project_id,
@@ -98,7 +98,7 @@ class ProjectModule:
     def end_project(self, project_id, end_date):
         ...
 
-    @command
+    @command_handler
     def add_member_to_project(self, project_id, employee_id, role):
         project = self.get_project(project_id)
         project.add_member(employee_id, role)

@@ -1,6 +1,8 @@
 from dataclasses import dataclass, field
 from collections import defaultdict
 from functools import partial
+from messaging import event_handler
+from project_module import NewProjectWasCreated, MemberWasAddedToProject
 
 @dataclass
 class TimeEntry:
@@ -32,3 +34,7 @@ class TimeSheetModule:
             minutes=minutes,
             description=description)
         self.time_entries.append(entry)
+
+    @event_handler(MemberWasAddedToProject)
+    def grant_access_to_project_policy(self, event: MemberWasAddedToProject):
+        self.grant_access_to_project(employee_id=event.employee_id, project_id=event.project_id)
