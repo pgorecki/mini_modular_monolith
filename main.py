@@ -28,7 +28,9 @@ if __name__ == '__main__':
         ...
 
     project_module.add_member_to_project(project_id="p1", employee_id="em1", role="backend_developer")
+    assert project_module.get_project("p1").is_member("em1")
 
+    # TODO: how to guarantee access to project within a timesheet module (if member)
     timesheet_module.log_time(project_id="p1", employee_id="em1", minutes=60, description="writing code")
 
     employee_module.fire_employee(employee_id="em1")

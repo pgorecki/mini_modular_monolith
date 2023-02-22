@@ -17,8 +17,28 @@ class Project:
     id: str
     client_id: str
     name: str
-    members: list[ProjectMember]
+    members: list[ProjectMember] = field(default_factory=list)
     is_public = False
+
+    def is_member(self, employee_id):
+        return any([m.employee_id == employee_id for m in self.members])
+
+    def add_member(self, employee_id, role, fte_percent=1):
+        membership = ProjectMember(
+            employee_id=employee_id,
+            name=...,
+            role=role,
+            start_date=date.today(),
+            end_date=None,
+            fte_percent=fte_percent,
+        )
+        self.members.append(membership)
+
+    def remove_member(self, employee_id):
+        for member in self.members[:]:
+            if member.employee_id == employee_id:
+                self.members.remove(member)
+                break
 
 
 @dataclass
@@ -40,7 +60,11 @@ class ProjectModule:
         ...
 
     def add_project(self, project_id, project_name):
-        new_project = Project()
+        new_project = Project(
+            id=project_id,
+            client_id=...,
+            name=project_name,
+        )
         self.projects[project_id] = new_project
 
     def change_project_name(self, project_id, new_name):
@@ -54,7 +78,9 @@ class ProjectModule:
         ...
 
     def add_member_to_project(self, project_id, employee_id, role):
-        ...
+        project = self.get_project(project_id)
+        project.add_member(employee_id, role)
 
     def remove_member_from_project(self, project_id, employee_id):
-        ...
+        project = self.get_project(project_id)
+        project.remove_member(employee_id)
