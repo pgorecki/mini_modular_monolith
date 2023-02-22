@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from datetime import date
-from messaging import EventBase, command_handler
-
+from messaging import EventBase, command_handler, event_handler
+from employee_emodule import EmployeeWasFired
 
 @dataclass
 class NewProjectWasCreated(EventBase):
@@ -71,12 +71,11 @@ class ProjectModule:
         project = self.get_project(project_id)
         report = [
             ('Team member', 'total time'),
-            ...
         ]
         return report
 
     def get_all_projects_of_employee(self, employee_id):
-        ...
+        return []
 
     @command_handler
     def add_project(self, project_id, project_name):
@@ -108,3 +107,10 @@ class ProjectModule:
         project = self.get_project(project_id)
         project.remove_member(employee_id)
         return MemberWasRemovedFromProject(employee_id=employee_id, project_id=project_id)
+
+    @event_handler(EmployeeWasFired)
+    def if_employee_was_fired_then_remove_from_all_projects_policy(self, event: EmployeeWasFired):
+        projects = self.get_all_projects_of_employee(event.employee_id)
+        for project in projects:
+            # TODO: this is a command that may result in new events to be fired...
+            self.remove_member_from_project(project_id=project.id, employee_id=event.employee_id)

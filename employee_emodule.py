@@ -1,5 +1,11 @@
 from dataclasses import dataclass, field
 from datetime import date
+from messaging import EventBase, command_handler
+
+
+@dataclass
+class EmployeeWasFired(EventBase):
+    employee_id: str
 
 @dataclass
 class WorkEngagement:
@@ -25,6 +31,7 @@ class Employee:
 class EmployeeModule:
     employees: set[Employee] = field(default_factory=list)
 
+    @command_handler
     def hire_employee(self, employee_id, employee_name, role, seniority):
         engagement = WorkEngagement(
             role=role,
@@ -40,9 +47,10 @@ class EmployeeModule:
 
         self.employees.append(employee)
 
+    @command_handler
     def fire_employee(self, employee_id):
         for employee in self.employees[:]:
             if employee.id == employee_id:
                 employee.end_current_engagement()
                 self.employees.remove(employee)
-                break
+                return EmployeeWasFired(employee_id=employee.id)

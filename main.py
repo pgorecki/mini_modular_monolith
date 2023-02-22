@@ -43,4 +43,4 @@ if __name__ == '__main__':
 
     report = project_module.get_time_report_for_project(project_id="p1")
 
-    print(report)
+    print('Report', report)
