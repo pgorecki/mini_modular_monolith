@@ -1,5 +1,24 @@
 from dataclasses import dataclass, field
 from datetime import date
+from messaging import command, EventBase
+
+
+@dataclass
+class NewProjectWasCreated(EventBase):
+    project_id: str
+    project_name: str
+
+
+@dataclass
+class MemberWasAddedToProject(EventBase):
+    employee_id: str
+    project_id: str
+
+
+@dataclass
+class MemberWasRemovedFromProject(EventBase):
+    employee_id: str
+    project_id: str
 
 
 @dataclass
@@ -59,6 +78,7 @@ class ProjectModule:
     def get_all_projects_of_employee(self, employee_id):
         ...
 
+    @command
     def add_project(self, project_id, project_name):
         new_project = Project(
             id=project_id,
@@ -66,6 +86,7 @@ class ProjectModule:
             name=project_name,
         )
         self.projects[project_id] = new_project
+        return NewProjectWasCreated(project_id=project_id, project_name=project_name)
 
     def change_project_name(self, project_id, new_name):
         project = self.get_project(project_id)
@@ -77,10 +98,13 @@ class ProjectModule:
     def end_project(self, project_id, end_date):
         ...
 
+    @command
     def add_member_to_project(self, project_id, employee_id, role):
         project = self.get_project(project_id)
         project.add_member(employee_id, role)
+        return MemberWasAddedToProject(employee_id=employee_id, project_id=project_id)
 
     def remove_member_from_project(self, project_id, employee_id):
         project = self.get_project(project_id)
         project.remove_member(employee_id)
+        return MemberWasRemovedFromProject(employee_id=employee_id, project_id=project_id)
