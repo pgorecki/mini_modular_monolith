@@ -23,21 +23,29 @@ class Project:
 
 @dataclass
 class ProjectModule:
+    projects: dict[str, Project] = field(default_factory=dict)
 
     def get_project(self, project_id):
-        ...
+        return self.projects[project_id]
 
     def get_time_report_for_project(self, project_id):
-        ...
+        project = self.get_project(project_id)
+        report = [
+            ('Team member', 'total time'),
+            ...
+        ]
+        return report
 
     def get_all_projects_of_employee(self, employee_id):
         ...
 
     def add_project(self, project_id, project_name):
-        ...
+        new_project = Project()
+        self.projects[project_id] = new_project
 
     def change_project_name(self, project_id, new_name):
-        ...
+        project = self.get_project(project_id)
+        project.name = new_name
 
     def start_project(self, project_id):
         ...
